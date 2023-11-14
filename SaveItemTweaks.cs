@@ -1,7 +1,7 @@
-﻿using NeosModLoader;
+﻿using ResoniteModLoader;
 using HarmonyLib;
 using FrooxEngine;
-using BaseX;
+using Elements.Core;
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using System.Linq;
@@ -10,11 +10,11 @@ using System;
 
 namespace SaveItemTweaks
 {
-    public class SaveItemTweaks : NeosMod
+    public class SaveItemTweaks : ResoniteMod
     {
         public override string Name => "SaveItemTweaks";
         public override string Author => "hantabaru1014";
-        public override string Version => "1.0.1";
+        public override string Version => "2.0.0";
         public override string Link => "https://github.com/hantabaru1014/SaveItemTweaks";
 
         private static ModConfiguration config;
@@ -56,7 +56,7 @@ namespace SaveItemTweaks
                         yield return new CodeInstruction(OpCodes.Ldarg_0);
                         yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(InventoryItem), nameof(InventoryItem.SavedScale)));
                         yield return new CodeInstruction(OpCodes.Call,
-                            AccessTools.Method(typeof(InventoryItem_Unpack_Patch), nameof(InventoryItem_Unpack_Patch.SetGlobalScale)));
+                            AccessTools.Method(typeof(InventoryItem_Unpack_Patch), nameof(SetGlobalScale)));
                         Msg("Patched InventoryItem.Unpack");
                     }
                     else
@@ -92,7 +92,7 @@ namespace SaveItemTweaks
             public static void Patch(Harmony harmony)
             {
                 var targetMethod = AccessTools.Method(TargetInternalClass, "MoveNext");
-                var transpiler = AccessTools.Method(typeof(ItemHelper_SaveItemInternal_Patch), nameof(ItemHelper_SaveItemInternal_Patch.Transpiler));
+                var transpiler = AccessTools.Method(typeof(ItemHelper_SaveItemInternal_Patch), nameof(Transpiler));
                 harmony.Patch(targetMethod, transpiler: new HarmonyMethod(transpiler));
             }
 
@@ -145,12 +145,12 @@ namespace SaveItemTweaks
 
         class UniversalImporter_ImportTask_Patch
         {
-            static readonly Type TargetInternalClass = typeof(UniversalImporter).GetNestedType("<ImportTask>d__11", BindingFlags.Instance | BindingFlags.NonPublic);
+            static readonly Type TargetInternalClass = typeof(UniversalImporter).GetNestedType("<ImportTask>d__14", BindingFlags.Instance | BindingFlags.NonPublic);
 
             public static void Patch(Harmony harmony)
             {
                 var targetMethod = AccessTools.Method(TargetInternalClass, "MoveNext");
-                var transpiler = AccessTools.Method(typeof(UniversalImporter_ImportTask_Patch), nameof(UniversalImporter_ImportTask_Patch.Transpiler));
+                var transpiler = AccessTools.Method(typeof(UniversalImporter_ImportTask_Patch), nameof(Transpiler));
                 harmony.Patch(targetMethod, transpiler: new HarmonyMethod(transpiler));
             }
 
@@ -172,7 +172,7 @@ namespace SaveItemTweaks
                         {
                             new CodeInstruction(OpCodes.Ldloc_1),
                             new CodeInstruction(OpCodes.Call, 
-                                AccessTools.Method(typeof(UniversalImporter_ImportTask_Patch), nameof(UniversalImporter_ImportTask_Patch.UnpackInventoryItem)))
+                                AccessTools.Method(typeof(UniversalImporter_ImportTask_Patch), nameof(UnpackInventoryItem)))
                         });
                         Msg("Patched UniversalImporter.ImportTask");
                         break;
@@ -192,13 +192,13 @@ namespace SaveItemTweaks
         class InventoryBrowser_SpawnItem_Patch
         {
             static readonly Type TargetInternalClass = typeof(InventoryBrowser)
-                .GetNestedType("<>c__DisplayClass92_1", BindingFlags.Instance | BindingFlags.NonPublic)
+                .GetNestedType("<>c__DisplayClass97_1", BindingFlags.Instance | BindingFlags.NonPublic)
                 .GetNestedType("<<SpawnItem>b__1>d", BindingFlags.Instance | BindingFlags.NonPublic);
 
             public static void Patch(Harmony harmony)
             {
                 var targetMethod = AccessTools.Method(TargetInternalClass, "MoveNext");
-                var transpiler = AccessTools.Method(typeof(InventoryBrowser_SpawnItem_Patch), nameof(InventoryBrowser_SpawnItem_Patch.Transpiler));
+                var transpiler = AccessTools.Method(typeof(InventoryBrowser_SpawnItem_Patch), nameof(Transpiler));
                 harmony.Patch(targetMethod, transpiler: new HarmonyMethod(transpiler));
             }
 
@@ -210,7 +210,7 @@ namespace SaveItemTweaks
                     if (code.Calls(positionInFrontOfUserMethod))
                     {
                         yield return new CodeInstruction(OpCodes.Call, 
-                            AccessTools.Method(typeof(InventoryBrowser_SpawnItem_Patch), nameof(InventoryBrowser_SpawnItem_Patch.SetPosition)));
+                            AccessTools.Method(typeof(InventoryBrowser_SpawnItem_Patch), nameof(SetPosition)));
                         Msg("Patched InventoryBrowser.SpawnItem");
                     }
                     else
