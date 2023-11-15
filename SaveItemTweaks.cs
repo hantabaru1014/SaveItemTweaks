@@ -170,7 +170,8 @@ namespace SaveItemTweaks
                     {
                         codes.InsertRange(i + 1, new[]
                         {
-                            new CodeInstruction(OpCodes.Ldloc_1),
+                            new CodeInstruction(OpCodes.Ldarg_0),
+                            new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(TargetInternalClass, "<s>5__2")),
                             new CodeInstruction(OpCodes.Call, 
                                 AccessTools.Method(typeof(UniversalImporter_ImportTask_Patch), nameof(UnpackInventoryItem)))
                         });
