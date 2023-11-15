@@ -185,7 +185,7 @@ namespace SaveItemTweaks
             static void UnpackInventoryItem(Slot slot)
             {
                 if (!config.GetValue(CallUnpackWhenImportKey)) return;
-                slot.UnpackInventoryItem();
+                slot.UnpackInventoryItem(preservePosition: true);
                 Msg("Called InventoryItem.Unpack on the imported object");
             }
         }
