@@ -14,7 +14,7 @@ namespace SaveItemTweaks
     {
         public override string Name => "SaveItemTweaks";
         public override string Author => "hantabaru1014";
-        public override string Version => "2.0.0";
+        public override string Version => "2.0.1";
         public override string Link => "https://github.com/hantabaru1014/SaveItemTweaks";
 
         private static ModConfiguration config;
@@ -110,7 +110,7 @@ namespace SaveItemTweaks
                             new CodeInstruction(OpCodes.Ldarg_0),
                             new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(TargetInternalClass, "itemSlot")),
                             new CodeInstruction(OpCodes.Call, 
-                                AccessTools.Method(typeof(ItemHelper_SaveItemInternal_Patch), nameof(ItemHelper_SaveItemInternal_Patch.FixSavedGraph)))
+                                AccessTools.Method(typeof(ItemHelper_SaveItemInternal_Patch), nameof(FixSavedGraph)))
                         });
                         Msg("Patched ItemHelper.SaveItemInternal");
                         break;
