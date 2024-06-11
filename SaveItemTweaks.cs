@@ -14,7 +14,7 @@ namespace SaveItemTweaks
     {
         public override string Name => "SaveItemTweaks";
         public override string Author => "hantabaru1014";
-        public override string Version => "2.0.1";
+        public override string Version => "2.0.2";
         public override string Link => "https://github.com/hantabaru1014/SaveItemTweaks";
 
         private static ModConfiguration config;
@@ -145,11 +145,14 @@ namespace SaveItemTweaks
 
         class UniversalImporter_ImportTask_Patch
         {
-            static readonly Type TargetInternalClass = typeof(UniversalImporter).GetNestedType("<ImportTask>d__14", BindingFlags.Instance | BindingFlags.NonPublic);
+            static Type TargetClass()
+            {
+                return AccessTools.FirstInner(typeof(UniversalImporter), t => t.Name.Contains("<ImportTask>"));
+            }
 
             public static void Patch(Harmony harmony)
             {
-                var targetMethod = AccessTools.Method(TargetInternalClass, "MoveNext");
+                var targetMethod = AccessTools.Method(TargetClass(), "MoveNext");
                 var transpiler = AccessTools.Method(typeof(UniversalImporter_ImportTask_Patch), nameof(Transpiler));
                 harmony.Patch(targetMethod, transpiler: new HarmonyMethod(transpiler));
             }
@@ -171,7 +174,7 @@ namespace SaveItemTweaks
                         codes.InsertRange(i + 1, new[]
                         {
                             new CodeInstruction(OpCodes.Ldarg_0),
-                            new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(TargetInternalClass, "<s>5__2")),
+                            new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(TargetClass(), "<s>5__2")),
                             new CodeInstruction(OpCodes.Call, 
                                 AccessTools.Method(typeof(UniversalImporter_ImportTask_Patch), nameof(UnpackInventoryItem)))
                         });
