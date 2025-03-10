@@ -7,7 +7,6 @@ A [ResoniteModLoader](https://github.com/resonite-modding-group/ResoniteModLoade
 - Do not change scale according to the user scale when the item spawn
     - If you are usually fairy/giant sized, set the Magnification limit in the config to a larger value  
     (If Magnification limit is set to 3, normal behavior will occur if User Scale is less than 1/3 or greater than 3)
-- Call InventoryItem.Unpack when importing the object (Slots named Holder will no longer be garbage when cloud spawning)
 
 All features are toggleable in the config.
 
