@@ -14,7 +14,7 @@ namespace SaveItemTweaks
     {
         public override string Name => "SaveItemTweaks";
         public override string Author => "hantabaru1014";
-        public override string Version => "2.0.2";
+        public override string Version => "2.1.0";
         public override string Link => "https://github.com/hantabaru1014/SaveItemTweaks";
 
         private static ModConfiguration config;
