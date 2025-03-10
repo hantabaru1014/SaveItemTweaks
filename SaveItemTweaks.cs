@@ -28,9 +28,6 @@ namespace SaveItemTweaks
         [AutoRegisterConfigKey]
         public static readonly ModConfigurationKey<float> DontScaleWhenItemSpawnMagnificationLimitKey 
             = new ModConfigurationKey<float>("DontScaleWhenItemSpawnMagnificationLimit", "└ Magnification limit of Dont Scale When Item Spawn", () => 3f);
-        [AutoRegisterConfigKey]
-        public static readonly ModConfigurationKey<bool> CallUnpackWhenImportKey
-            = new ModConfigurationKey<bool>("CallUnpackWhenImport", "Call InventoryItem.Unpack when importing the object", () => true);
 
         public override void OnEngineInit()
         {
@@ -39,7 +36,6 @@ namespace SaveItemTweaks
             var harmony = new Harmony("net.hantabaru1014.SaveItemTweaks");
             harmony.PatchAll();
             ItemHelper_SaveItemInternal_Patch.Patch(harmony);
-            UniversalImporter_ImportTask_Patch.Patch(harmony);
             InventoryBrowser_SpawnItem_Patch.Patch(harmony);
         }
 
@@ -140,56 +136,6 @@ namespace SaveItemTweaks
                 scaleDict?.AddOrUpdate("Data", Coder<float3>.Save(targetScale));
 
                 return graph;
-            }
-        }
-
-        class UniversalImporter_ImportTask_Patch
-        {
-            static Type TargetClass()
-            {
-                return AccessTools.FirstInner(typeof(UniversalImporter), t => t.Name.Contains("<ImportTask>"));
-            }
-
-            public static void Patch(Harmony harmony)
-            {
-                var targetMethod = AccessTools.Method(TargetClass(), "MoveNext");
-                var transpiler = AccessTools.Method(typeof(UniversalImporter_ImportTask_Patch), nameof(Transpiler));
-                harmony.Patch(targetMethod, transpiler: new HarmonyMethod(transpiler));
-            }
-
-            static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
-            {
-                var codes = instructions.ToList();
-                var foundLoadingMsg = false;
-                var setGlobalScaleMethod = AccessTools.Method(typeof(Slot), "set_GlobalScale");
-                for (var i = 0; i < codes.Count; i++)
-                {
-                    if (codes[i].opcode == OpCodes.Ldstr && (string)codes[i].operand == "Loading raw object from: ")
-                    {
-                        foundLoadingMsg = true;
-                        continue;
-                    }
-                    if (foundLoadingMsg && codes[i].Calls(setGlobalScaleMethod))
-                    {
-                        codes.InsertRange(i + 1, new[]
-                        {
-                            new CodeInstruction(OpCodes.Ldarg_0),
-                            new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(TargetClass(), "<s>5__2")),
-                            new CodeInstruction(OpCodes.Call, 
-                                AccessTools.Method(typeof(UniversalImporter_ImportTask_Patch), nameof(UnpackInventoryItem)))
-                        });
-                        Msg("Patched UniversalImporter.ImportTask");
-                        break;
-                    }
-                }
-                return codes.AsEnumerable();
-            }
-
-            static void UnpackInventoryItem(Slot slot)
-            {
-                if (!config.GetValue(CallUnpackWhenImportKey)) return;
-                slot.UnpackInventoryItem();
-                Msg("Called InventoryItem.Unpack on the imported object");
             }
         }
 
